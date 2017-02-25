@@ -2,45 +2,47 @@ package flow
 
 import "fmt"
 
-type node struct {
-    neigbours *[]node
-    endpoint bool
-    x,y,colour int
+type end struct {
+    node_id [2]int
 }
 
 type Board struct {
-    width,height int
-    fields [][]node
+    ends []end
+    edges [][]int
 }
 
 func NewSquareBoard(width,height int) *Board {
-    board := Board{width,height,make([][]node,height)}
-    for i:=0; i<height; i++ {
-        board.fields[i] = make([]node,width)
+    board := Board{make([]end,0),make([][]int,width*height)}
+    for i:=0; i<width*height; i++ {
+        board.edges[i] = make([]int,0)
+    }
+    for y:=0; y<height; y++ {
+        for x:=0; x<width; x++ {
+            field := y*width + x
+            if x != 0 {
+                left := y*width + x-1
+                board.addEdge(field,left)
+            }
+            if y != 0 {
+                top := (y-1)*width + x
+                board.addEdge(field,top)
+            }
+        }
     }
     return &board
 
 }
 
-func (board *Board) getField(x,y int) node {
-    if x < 0 || x >= board.width {
-        panic("Accessing x outside bounds")
-    } 
-    if y < 0 || y >= board.height {
-        panic("Accessing y outside bounds")
-    }
-    return board.fields[y][x]
+func (board *Board) addEdge(a,b int) {
+    board.edges[a] = append(board.edges[a],b)
+    board.edges[b] = append(board.edges[b],a)
 }
 
 func (board *Board) Print() {
-    for y:=0; y<board.height; y++ {
-        for x:=0; x<board.width; x++ {
-            v := board.getField(x,y).colour
-            if v == 0 {
-                fmt.Printf(" -")
-            } else {
-                fmt.Printf(" %d",v)
-            }
+    for id,node := range board.edges {
+        fmt.Printf("Node (%d): ",id)
+        for _,neighbour := range node {
+            fmt.Printf("%d ",neighbour)
         }
         fmt.Printf("\n")
     }

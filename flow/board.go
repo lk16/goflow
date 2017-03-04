@@ -118,7 +118,7 @@ func (board *RectangleBoard) print(edges []pair) {
         fmt.Printf("\n")
     }
 
-    fmt.Printf("\n\n\n")
+    fmt.Printf("\n")
 }
 
 type Solver struct {
@@ -139,7 +139,18 @@ func (board *RectangleBoard) Solve() {
         solver.node_used[p[1]] = true
         solver.node_used_count += 2
     }
-    solver.solvePath(0)
+    
+    fmt.Printf("\nProblem:\n\n")
+    board.Print()
+
+
+    if solver.solvePath(0) {
+        fmt.Printf("\nFound solution:\n\n")
+        solver.print()
+    } else {
+        fmt.Printf("No solution found\n")
+    }
+
 }
 
 func (solver *Solver) print() {
@@ -183,14 +194,14 @@ func (solver *Solver) solvePathRec(from,to,path_id int) bool {
             solver.node_used_count += 1
             solver.edges = append(solver.edges,pair{from,next})
 
-            fmt.Printf("nodes_used (%d): ",solver.node_used_count)
+            /*fmt.Printf("nodes_used (%d): ",solver.node_used_count)
             for i,_ := range solver.node_used {
                 if solver.node_used[i] {
                     fmt.Printf("%d ",i)
                 }
             }
             fmt.Printf("\n")
-            solver.print()
+            solver.print()*/
          
             if solver.solvePathRec(next,to,path_id) {
                 return true
